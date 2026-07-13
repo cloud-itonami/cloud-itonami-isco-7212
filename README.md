@@ -2,6 +2,24 @@
 
 Open Occupation Blueprint for **ISCO-08 7212**: Welders and Flame Cutters.
 
+**Maturity: `:implemented`** — WeldingAdvisor ⊣ WeldingGovernor as a
+langgraph StateGraph (`intake → advise → govern → decide →
+commit/hold`, human-approval interrupt), modeled on
+cloud-itonami-isco-4311's bookkeeping actor. 14 tests / 29 assertions
+green. The governor never dispatches hardware — it only gates what
+the weld-prep/inspection robot below may execute.
+
+The inspection HARD invariants — measured against code, not eyeballed:
+
+1. **Defect-length ceiling** — the measured weld defect length must
+   not exceed the joint's registered acceptance ceiling.
+2. **Alignment-offset ceiling** — the measured joint-alignment offset
+   must not exceed the joint's registered ceiling.
+
+`:approve-arc-welding-operation` and `:approve-flammable-proximity`
+**always** escalate to human sign-off regardless of confidence, per
+this repo's Trust Controls (business-model.md).
+
 This repository designs a forkable OSS business for an independent welder: a weld-prep and inspection robot performs joint-alignment checks and post-weld inspection scans under a governor-gated actor, so the practice keeps its own job and inspection records instead of renting a closed trades-management SaaS.
 
 ## Robotics premise
