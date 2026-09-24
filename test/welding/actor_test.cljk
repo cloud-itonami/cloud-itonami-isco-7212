@@ -1,5 +1,5 @@
 (ns welding.actor-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [welding.actor :as actor]
             [welding.store :as store]))
 
