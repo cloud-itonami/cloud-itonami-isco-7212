@@ -1,0 +1,34 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a weld-prep and inspection robot for welders
+;; and flame cutters (ISCO 7212) performs joint alignment checks and
+;; post-weld inspection scans; work near open flame, arc welding or flammable
+;; materials needs human sign-off. Its physical work: preheating the joint
+;; to the procedure's minimum before the welder strikes an arc, and pulling
+;; the transverse tensile coupon cut from a finished weld.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-7212"
+ :cases
+ [{:id :joint-preheat
+   :kind :thermal
+   :procedure "weld-prep robot preheats a structural steel plate joint with a propane heating torch from the top face until the underside reaches the 100 C minimum preheat; plate thickness is swept"
+   :params {:conductivity-w-mk 45.0 :density-kg-m3 7850.0 :specific-heat-j-kgk 480.0
+            :t0-c 10.0 :t-hot-c 900.0 :h-front-w-m2k 60.0
+            :t-back-ambient-c 10.0 :h-back-w-m2k 10.0 :threshold-c 100.0 :duration-s 1800.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.010 0.020 0.030 0.040 0.050 0.080]}
+   :quantity :time-to-threshold-s
+   :limit {:max 600.0 :basis "estimate: a 10-minute preheat slot per joint in the weld sequence; the 100 C minimum preheat is itself an estimate for thick S355 (the procedure's WPS / EN 1011-2 method would set it)"}
+   :boundary {:lo 0.01 :hi 0.10}}
+  {:id :weld-coupon-tensile
+   :kind :material
+   :procedure "inspection robot pulls a 25 x 10 mm transverse tensile coupon cut across a butt weld in S355 plate; the weld metal's actual yield strength is swept to show where the coupon stops qualifying"
+   :params {:length-m 0.20 :area-m2 2.5e-4 :youngs-modulus-pa 210.0e9 :hardening-pa 1.0e9
+            :max-force-n 120000.0}
+   :sweep {:param :yield-stress-pa :values [300.0e6 330.0e6 355.0e6 380.0e6 420.0e6]}
+   :quantity :yield-force-n
+   :limit {:min 88750.0 :basis "EN 10025-2: S355 minimum yield strength 355 MPa (nominal thickness up to 16 mm) x the 250 mm2 coupon section; using yield rather than tensile strength as the acceptance quantity is an estimate"}
+   :boundary {:lo 250.0e6 :hi 450.0e6}}]}
