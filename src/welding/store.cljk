@@ -1,6 +1,6 @@
 (ns welding.store
   "SSoT for the ISCO-08 7212 independent welding practice actor
-  (itonami actor pattern, ADR-2607011000 / CLAUDE.md Actors section;
+  (itonami actor pattern, ADR-2607011000 / AGENTS.md Actors section;
   README's 'Robotics premise' — a weld-prep and inspection robot
   performs joint-alignment checks and post-weld inspection scans
   under this advisor/governor pair, which never dispatches hardware
